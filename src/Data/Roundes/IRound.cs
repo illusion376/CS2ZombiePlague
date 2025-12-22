@@ -9,6 +9,5 @@ namespace CS2ZombiePlague.src.Data.Roundes
         // public abstract void Setup();
         public void Start();
         public void End();
-
     }
 }

@@ -23,7 +23,7 @@ namespace CS2ZombiePlague.src.Data.Roundes
         {
             var players = _core.PlayerManager.GetAllPlayers().Shuffle();
             var randomPlayer = players.First();
-            CS2ZombiePlague.ZombieManagement.CreateZombie(randomPlayer);
+            CS2ZombiePlague.ZombieManager.CreateZombie(randomPlayer);
 
             _core.PlayerManager.SendCenter("Первый заражённый => +" + randomPlayer.Controller.PlayerName);
         }

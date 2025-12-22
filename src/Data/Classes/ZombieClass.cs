@@ -12,6 +12,5 @@ namespace CS2ZombiePlague.src.Data.Classes
         public float Speed { get; }
         public float Knockback { get; }
         public int Gravity { get; }
-
     }
 }

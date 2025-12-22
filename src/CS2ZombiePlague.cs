@@ -9,12 +9,12 @@ using SwiftlyS2.Shared.Plugins;
 
 namespace CS2ZombiePlague
 {
-    [PluginMetadata(Id = "CS2ZombiePlague", Version = "1.0.0", Name = "CS2ZombiePlague", Author = "illusion&fdrinv", Description = "No description.")]
+    [PluginMetadata(Id = "CS2ZombiePlague", Version = "1.0.0", Name = "CS2ZombiePlague", Author = "illusion & fdrinv", Description = "Zombie Plague mode for CS2")]
     public partial class CS2ZombiePlague : BasePlugin
     {
         private ServiceProvider? _provider;
 
-        public static ZombieManager ZombieManagement = null!;
+        public static ZombieManager ZombieManager = null!;
         public static RoundManager RoundManager = null!;
         public CS2ZombiePlague(ISwiftlyCore core) : base(core)
         {
@@ -43,7 +43,7 @@ namespace CS2ZombiePlague
 
             _provider = services.BuildServiceProvider();
 
-            ZombieManagement = _provider.GetRequiredService<ZombieManager>();
+            ZombieManager = _provider.GetRequiredService<ZombieManager>();
             RoundManager = _provider.GetRequiredService<RoundManager>();
 
             RegisterRounds();
@@ -64,7 +64,7 @@ namespace CS2ZombiePlague
 
         public HookResult OnRoundStart(EventRoundStart @event)
         {
-            ZombieManagement.RemoveAll();
+            ZombieManager.RemoveAll();
             if (RoundManager.GameIsAvailable())
             {
                 RoundManager.SelectRound(0);
@@ -75,7 +75,7 @@ namespace CS2ZombiePlague
 
         public HookResult OnRoundEnd(EventRoundEnd @event)
         {
-            if (RoundManager.GameIsAvailable() && RoundManager.GetRound() != null)
+            if (RoundManager.GetRound() != null)
             {
                 RoundManager.GetRound().End();
             }
@@ -94,7 +94,5 @@ namespace CS2ZombiePlague
                 }
             }
         }
-
-
     }
 }

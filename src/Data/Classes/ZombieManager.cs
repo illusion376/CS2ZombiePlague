@@ -12,21 +12,12 @@ namespace CS2ZombiePlague.src.Data.Classes
 
         public ZombiePlayer CreateZombie(IPlayer player)
         {
-            if(!ZombiePlayers.TryGetValue(player.PlayerID, out ZombiePlayer? zombiePlayer))
-            {
-                zombiePlayer = new ZombiePlayer(new ZombieHeavy(player), player);
-                ZombiePlayers[player.PlayerID] = zombiePlayer;
-            }
-
-            return zombiePlayer;
+            return ZombiePlayers[player.PlayerID] = new ZombiePlayer(new ZombieHeavy(player), player);
         }
 
         public void Remove(IPlayer player)
         {
-            if (ZombiePlayers.TryGetValue(player.PlayerID, out ZombiePlayer? zombiePlayer))
-            {
-                ZombiePlayers.Remove(player.PlayerID);
-            }
+            ZombiePlayers.Remove(player.PlayerID);
         }
 
         public void RemoveAll()
@@ -36,11 +27,7 @@ namespace CS2ZombiePlague.src.Data.Classes
 
         public bool IsInfected(IPlayer player)
         {
-            if(ZombiePlayers.TryGetValue(player.PlayerID, out ZombiePlayer? zombiePlayer))
-            {
-                return true;
-            }
-            return false;
+            return ZombiePlayers.ContainsKey(player.PlayerID);
         }
     }
 }

@@ -20,7 +20,9 @@ namespace CS2ZombiePlague.src.Data.Classes
         public void ApplyZombieState()
         {
             if (_player.PlayerPawn == null)
-                return;
+            {
+                return; 
+            }
 
             _player.SetHealth(_zombieClass.Health);
             _player.SetSpeed(_zombieClass.Speed);
@@ -35,7 +37,5 @@ namespace CS2ZombiePlague.src.Data.Classes
         }
 
         public IZombieClass GetZombieClass() { return _zombieClass; }
-        public IPlayer GetPlayer() { return _player; }
     }
-
 }
