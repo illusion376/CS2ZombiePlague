@@ -1,5 +1,4 @@
-﻿using CS2ZombiePlague.src.Data.Abilities;
-using CS2ZombiePlague.src.Data.Extensions;
+﻿using CS2ZombiePlague.src.Data.Extensions;
 using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.src.Data.Classes

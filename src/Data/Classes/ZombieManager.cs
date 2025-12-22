@@ -12,7 +12,7 @@ namespace CS2ZombiePlague.src.Data.Classes
 
         public ZombiePlayer CreateZombie(IPlayer player)
         {
-            return ZombiePlayers[player.PlayerID] = new ZombiePlayer(new ZombieHeavy(player), player);
+            return ZombiePlayers[player.PlayerID] = new ZombiePlayer(new ZombieHeavy(), player);
         }
 
         public void Remove(IPlayer player)

@@ -13,12 +13,5 @@ namespace CS2ZombiePlague.src.Data.Classes
         public float Speed => 240.0f;
         public float Knockback => 1.0f;
         public int Gravity => 900;
-
-        public BaseAbility ability;
-
-        public ZombieHeavy(IPlayer player)
-        {
-            ability = new Blindness(player);
-        }
     }
 }
