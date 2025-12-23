@@ -53,7 +53,11 @@ namespace CS2ZombiePlague
             Core.GameEvent.HookPost<EventRoundStart>(OnRoundStart);
             Core.GameEvent.HookPost<EventRoundEnd>(OnRoundEnd);
             Core.GameEvent.HookPost<EventPlayerHurt>(OnPlayerHurt);
+        }
 
+        private void RegisterRounds()
+        {
+            RoundManager.Register(new Infection(Core));
         }
 
         private void RegisterRounds()
