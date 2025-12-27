@@ -1,4 +1,7 @@
-﻿using SwiftlyS2.Shared.Players;
+﻿using CS2ZombiePlague.src.Data.Classes;
+using SwiftlyS2.Shared.Natives;
+using SwiftlyS2.Shared.Players;
+using SwiftlyS2.Shared.SchemaDefinitions;
 
 namespace CS2ZombiePlague.src.Data.Extensions
 {
@@ -11,8 +14,8 @@ namespace CS2ZombiePlague.src.Data.Extensions
 
             playerPawn.Health = health;
             playerPawn.HealthUpdated();
-
         }
+
         public static void SetArmor(this IPlayer player, int armor)
         {
             var playerPawn = player.PlayerPawn;
@@ -21,6 +24,7 @@ namespace CS2ZombiePlague.src.Data.Extensions
             playerPawn.ArmorValue = armor;
             playerPawn.ArmorValueUpdated();
         }
+
         // Стандартное значение скорости 250
         public static void SetSpeed(this IPlayer player, float speed)
         {
@@ -30,6 +34,7 @@ namespace CS2ZombiePlague.src.Data.Extensions
             playerPawn.VelocityModifier = speed / 250;
             playerPawn.VelocityModifierUpdated();
         }
+
         // Стандартное значение гравитации 800
         public static void SetGravity(this IPlayer player, float gravity)
         {
@@ -53,6 +58,11 @@ namespace CS2ZombiePlague.src.Data.Extensions
         {
             var allZombies = CS2ZombiePlague.ZombieManager.GetAllZombies();
             return allZombies.ContainsKey(player.PlayerID);
+        }
+        
+        public static bool IsLastHuman(this IPlayer player)
+        {
+            return !player.IsInfected() && CS2ZombiePlague.HumanManager.GetCountHumans() == 1;
         }
     }
 }

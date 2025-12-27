@@ -1,22 +1,29 @@
-using CS2ZombiePlague.src.Data.Classes;
+using CS2ZombiePlague.Data.Managers;
 using CS2ZombiePlague.src.Data.Extensions;
-using CS2ZombiePlague.src.Data.Roundes;
+using CS2ZombiePlague.src.Data.Managers;
+using CS2ZombiePlague.Data.Rounds;
+using CS2ZombiePlague.Data.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Events;
 using SwiftlyS2.Shared.GameEventDefinitions;
 using SwiftlyS2.Shared.Misc;
+using SwiftlyS2.Shared.Players;
 using SwiftlyS2.Shared.Plugins;
 
 namespace CS2ZombiePlague
 {
-    [PluginMetadata(Id = "CS2ZombiePlague", Version = "1.0.0", Name = "CS2ZombiePlague", Author = "illusion & fdrinv", Description = "Zombie Plague mode for CS2")]
+    [PluginMetadata(Id = "CS2ZombiePlague", Version = "1.0.0", Name = "CS2ZombiePlague", Author = "illusion & fdrinv",
+        Description = "Zombie Plague mode for CS2")]
     public partial class CS2ZombiePlague : BasePlugin
     {
         private ServiceProvider? _provider;
 
         public static ZombieManager ZombieManager = null!;
         public static RoundManager RoundManager = null!;
+        public static HumanManager HumanManager = null!;
+        public static Utils Utils = null!;
+
         public CS2ZombiePlague(ISwiftlyCore core) : base(core)
         {
         }
@@ -38,38 +45,56 @@ namespace CS2ZombiePlague
 
             ServiceCollection services = new();
             services
-              .AddSwiftly(Core)
-              .AddSingleton<ZombieManager>()
-              .AddSingleton<RoundManager>();
+                .AddSwiftly(Core)
+                .AddSingleton<ZombieManager>()
+                .AddSingleton<RoundManager>()
+                .AddSingleton<HumanManager>()
+                .AddSingleton<Utils>();
 
             _provider = services.BuildServiceProvider();
 
             ZombieManager = _provider.GetRequiredService<ZombieManager>();
             RoundManager = _provider.GetRequiredService<RoundManager>();
+            HumanManager = _provider.GetRequiredService<HumanManager>();
+            Utils = _provider.GetRequiredService<Utils>();
 
             RegisterRounds();
 
             Core.GameEvent.HookPost<EventRoundStart>(OnRoundStart);
             Core.GameEvent.HookPost<EventRoundEnd>(OnRoundEnd);
-            Core.GameEvent.HookPost<EventPlayerHurt>(OnPlayerHurt);
+            Core.GameEvent.HookPre<EventPlayerHurt>(OnPlayerHurt);
         }
 
         private void RegisterRounds()
         {
-            RoundManager.Register(new Infection(Core));
+            RoundManager.Register(RoundType.None, new None());
+            RoundManager.Register(RoundType.Infection, new Infection(Core));
         }
 
         public override void Unload()
         {
-
         }
 
         public HookResult OnRoundStart(EventRoundStart @event)
         {
             ZombieManager.RemoveAll();
-            if (RoundManager.GameIsAvailable())
+            RoundManager.SetRound(RoundType.None);
+
+            if (RoundManager.RoundIsAvailable())
             {
-                RoundManager.SelectRound(0);
+                RoundManager.Start();
+            }
+
+            return HookResult.Continue;
+        }
+        
+        public HookResult OnPlayerHurt(EventPlayerHurt @event)
+        {
+            if (RoundManager.GetRound() == null)
+            {
+                IPlayer victimPlayer = @event.UserIdPlayer;
+                if(victimPlayer.IsValid)
+                    victimPlayer.SetHealth(victimPlayer.Pawn.Health+@event.DmgHealth);
             }
 
             return HookResult.Continue;
@@ -81,29 +106,17 @@ namespace CS2ZombiePlague
             {
                 RoundManager.GetRound().End();
             }
-
-            return HookResult.Continue;
-        }
-
-        public HookResult OnPlayerHurt(EventPlayerHurt @event)
-        {
-            var infector = Core.PlayerManager.GetPlayer(@event.Attacker);
-            var victim = @event.Accessor.GetPlayer("userid");
-            if (infector == null || victim == null) { return HookResult.Continue; }
-
-            if (infector.IsInfected() && !victim.IsInfected())
-            {
-                ZombieManager.CreateZombie(victim);
-            }
+            
             return HookResult.Continue;
         }
 
         [EventListener<EventDelegates.OnWeaponServicesCanUseHook>]
         public void OnItemServicesCanAcquireHook(IOnWeaponServicesCanUseHookEvent @event)
         {
-            if (@event.WeaponServices.Pawn != null)
+            var player = Core.PlayerManager.GetPlayer((int)@event.WeaponServices.Pawn.Controller.EntityIndex - 1);
+            if (player.IsValid)
             {
-                if (@event.WeaponServices.Pawn.Health > 1000 && @event.Weapon.DesignerName != "weapon_knife")
+                if (player.IsInfected() && @event.Weapon.DesignerName != "weapon_knife")
                 {
                     @event.SetResult(false);
                 }

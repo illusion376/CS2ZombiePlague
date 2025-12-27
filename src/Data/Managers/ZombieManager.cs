@@ -1,7 +1,8 @@
-﻿using SwiftlyS2.Shared;
+﻿using CS2ZombiePlague.src.Data.Classes;
+using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Players;
 
-namespace CS2ZombiePlague.src.Data.Classes
+namespace CS2ZombiePlague.Data.Managers
 {
     public class ZombieManager(ISwiftlyCore _core)
     {
@@ -20,6 +21,11 @@ namespace CS2ZombiePlague.src.Data.Classes
         public void RemoveAll()
         {
             _zombiePlayers.Clear();
+        }
+
+        public ZombiePlayer GetZombie(int playerID)
+        {
+            return _zombiePlayers[playerID];
         }
 
         public Dictionary<int, ZombiePlayer> GetAllZombies()
