@@ -5,13 +5,13 @@ namespace CS2ZombiePlague.Data.Classes;
 
 public class ZombieController(ZombieClass zombieClass)
 {
-    public void ApplyState(IPlayer player)
+    public void InitializeZombiePlayer(IPlayer player)
     {
         player.SetHealth(zombieClass.Health);
         player.SetSpeed(zombieClass.Speed);
         player.SetGravity(zombieClass.Gravity);
         player.SetModel(zombieClass.ZombieModel);
-            
+
         var itemServices = player.PlayerPawn?.ItemServices;
         if (itemServices != null)
         {
@@ -19,28 +19,16 @@ public class ZombieController(ZombieClass zombieClass)
             itemServices.GiveItem("weapon_knife");
         }
 
-        player.SwitchTeam(Team.T);        
-    }
-        
-    public bool TryInfect(IPlayer target)
-    {
-        if (target != null && !target.IsInfected() && !target.IsLastHuman())
-        {
-            Infect(target);
-            return true;
-        }
-        return false;
+        player.SwitchTeam(Team.T);
     }
 
     public ZombieClass GetZombieClass()
     {
         return zombieClass;
     }
-        
-    private void Infect(IPlayer target)
+
+    public void Infect(IPlayer target)
     {
         CS2ZombiePlague.ZombieManager.CreateZombie(target);
     }
-        
-        
 }

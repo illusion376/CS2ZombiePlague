@@ -8,54 +8,44 @@ namespace CS2ZombiePlague.Data;
 
 public class Knockback(ISwiftlyCore _core)
 {
-    private class KnockbackInfo
-    {
-        public float recoil;
-        public float pickDistance;
+    private record KnockbackData(float Recoil, float PickDistance);
 
-        public KnockbackInfo(float recoil, float pickDistance)
-        {
-            this.recoil = recoil;
-            this.pickDistance = pickDistance;
-        }
-    }
-
-    private readonly Dictionary<string, KnockbackInfo> _weaponKnockback = new Dictionary<string, KnockbackInfo>()
+    private readonly Dictionary<string, KnockbackData> _weaponKnockback = new Dictionary<string, KnockbackData>()
     {
-        { "weapon_glock", new KnockbackInfo(150.0f, 100.0f) },
-        { "weapon_usp_silencer", new KnockbackInfo(160.0f, 100.0f) },
-        { "weapon_hkp2000", new KnockbackInfo(200.0f, 100.0f) },
-        { "weapon_elite", new KnockbackInfo(225.0f, 100.0f) },
-        { "weapon_p250", new KnockbackInfo(225.0f, 100.0f) },
-        { "weapon_fiveseven", new KnockbackInfo(225.0f, 100.0f) },
-        { "weapon_cz75a", new KnockbackInfo(240.0f, 100.0f) },
-        { "weapon_deagle", new KnockbackInfo(900.0f, 100.0f) },
-        { "weapon_revolver", new KnockbackInfo(900.0f, 125.0f) },
-        { "weapon_nova", new KnockbackInfo(250.0f, 75.0f) },
-        { "weapon_xm1014", new KnockbackInfo(250.0f, 75.0f) },
-        { "weapon_sawedoff", new KnockbackInfo(250.0f, 75.0f) },
-        { "weapon_mag7", new KnockbackInfo(300.0f, 75.0f) },
-        { "weapon_m249", new KnockbackInfo(300.0f, 75.0f) },
-        { "weapon_negev", new KnockbackInfo(300.0f, 150.0f) },
-        { "weapon_mac10", new KnockbackInfo(300.0f, 150.0f) },
-        { "weapon_mp7", new KnockbackInfo(300.0f, 150.0f) },
-        { "weapon_mp9", new KnockbackInfo(300.0f, 150.0f) },
-        { "weapon_mp5sd", new KnockbackInfo(300.0f, 150.0f) },
-        { "weapon_ump45", new KnockbackInfo(300.0f, 150.0f) },
-        { "weapon_p90", new KnockbackInfo(300.0f, 150.0f) },
-        { "weapon_bizon", new KnockbackInfo(300.0f, 150.0f) },
-        { "weapon_galilar", new KnockbackInfo(300.0f, 150.0f) },
-        { "weapon_famas", new KnockbackInfo(300.0f, 150.0f) },
-        { "weapon_ak47", new KnockbackInfo(400.0f, 250.0f) },
-        { "weapon_m4a4", new KnockbackInfo(400.0f, 250.0f) },
-        { "weapon_m4a1_silencer", new KnockbackInfo(350.0f, 250.0f) },
-        { "weapon_ssg08", new KnockbackInfo(300.0f, 150.0f) },
-        { "weapon_sg556", new KnockbackInfo(300.0f, 150.0f) },
-        { "weapon_aug", new KnockbackInfo(300.0f, 150.0f) },
-        { "weapon_awp", new KnockbackInfo(1200.0f, 400.0f) },
-        { "weapon_g3sg1", new KnockbackInfo(300.0f, 150.0f) },
-        { "weapon_scar20", new KnockbackInfo(300.0f, 150.0f) },
-        { "weapon_knife", new KnockbackInfo(1200.0f, 25.0f) },
+        { "weapon_glock", new KnockbackData(150.0f, 100.0f) },
+        { "weapon_usp_silencer", new KnockbackData(160.0f, 100.0f) },
+        { "weapon_hkp2000", new KnockbackData(200.0f, 100.0f) },
+        { "weapon_elite", new KnockbackData(225.0f, 100.0f) },
+        { "weapon_p250", new KnockbackData(225.0f, 100.0f) },
+        { "weapon_fiveseven", new KnockbackData(225.0f, 100.0f) },
+        { "weapon_cz75a", new KnockbackData(240.0f, 100.0f) },
+        { "weapon_deagle", new KnockbackData(900.0f, 100.0f) },
+        { "weapon_revolver", new KnockbackData(900.0f, 125.0f) },
+        { "weapon_nova", new KnockbackData(250.0f, 75.0f) },
+        { "weapon_xm1014", new KnockbackData(250.0f, 75.0f) },
+        { "weapon_sawedoff", new KnockbackData(250.0f, 75.0f) },
+        { "weapon_mag7", new KnockbackData(300.0f, 75.0f) },
+        { "weapon_m249", new KnockbackData(300.0f, 75.0f) },
+        { "weapon_negev", new KnockbackData(300.0f, 150.0f) },
+        { "weapon_mac10", new KnockbackData(300.0f, 150.0f) },
+        { "weapon_mp7", new KnockbackData(300.0f, 150.0f) },
+        { "weapon_mp9", new KnockbackData(300.0f, 150.0f) },
+        { "weapon_mp5sd", new KnockbackData(300.0f, 150.0f) },
+        { "weapon_ump45", new KnockbackData(300.0f, 150.0f) },
+        { "weapon_p90", new KnockbackData(300.0f, 150.0f) },
+        { "weapon_bizon", new KnockbackData(300.0f, 150.0f) },
+        { "weapon_galilar", new KnockbackData(300.0f, 150.0f) },
+        { "weapon_famas", new KnockbackData(300.0f, 150.0f) },
+        { "weapon_ak47", new KnockbackData(400.0f, 250.0f) },
+        { "weapon_m4a4", new KnockbackData(400.0f, 250.0f) },
+        { "weapon_m4a1_silencer", new KnockbackData(350.0f, 250.0f) },
+        { "weapon_ssg08", new KnockbackData(300.0f, 150.0f) },
+        { "weapon_sg556", new KnockbackData(300.0f, 150.0f) },
+        { "weapon_aug", new KnockbackData(300.0f, 150.0f) },
+        { "weapon_awp", new KnockbackData(1200.0f, 400.0f) },
+        { "weapon_g3sg1", new KnockbackData(300.0f, 150.0f) },
+        { "weapon_scar20", new KnockbackData(300.0f, 150.0f) },
+        { "weapon_knife", new KnockbackData(1200.0f, 25.0f) },
     };
 
     public void Start()
@@ -85,8 +75,8 @@ public class Knockback(ISwiftlyCore _core)
         var directionVector = (victimOrigin - attackerOrigin)!.Normalized();
         var distance = GetDistance(victimOrigin, attackerOrigin);
 
-        float recoil = GetShotgunRecoil(distance, _weaponKnockback[weaponName].recoil,
-            _weaponKnockback[weaponName].pickDistance);
+        float recoil = GetGunRecoil(distance, _weaponKnockback[weaponName].Recoil,
+            _weaponKnockback[weaponName].PickDistance);
 
         var zombie = CS2ZombiePlague.ZombieManager.GetZombie(victim.PlayerID);
         var zombieKnockback = zombie.GetZombieClass().Knockback;
@@ -116,11 +106,10 @@ public class Knockback(ISwiftlyCore _core)
                                 Math.Pow(vector1.Z - vector2.Z, 2));
     }
 
-    private float GetShotgunRecoil(float distance, float recoilMax, float peakDistance, float k = -0.002f)
+    private float GetGunRecoil(float distance, float recoilMax, float peakDistance, float k = -0.002f)
     {
         if (distance <= peakDistance)
             return recoilMax;
-        // Console.WriteLine("recoil:" + (float) (recoilMax * Math.Exp(k * (distance - peakDistance))) + "\n");
         return (float)(recoilMax * Math.Exp(k * (distance - peakDistance)));
     }
 }

@@ -1,9 +1,7 @@
-﻿using CS2ZombiePlague.Data.Classes;
-using CS2ZombiePlague.src.Data.Extensions;
+﻿using CS2ZombiePlague.src.Data.Extensions;
 using SwiftlyS2.Shared.Players;
-using SwiftlyS2.Shared.SchemaDefinitions;
 
-namespace CS2ZombiePlague.src.Data.Classes;
+namespace CS2ZombiePlague.Data.Classes;
 
 public class ZombiePlayer
 {
@@ -21,9 +19,14 @@ public class ZombiePlayer
         player.SendAlert("Ваш класс => " + zombieClass.DisplayName);
     }
 
-    public void Infect(IPlayer target)
+    public bool Infect(IPlayer target)
     {
-        zombieController.TryInfect(target);
+        if (target != null && !target.IsInfected() && !target.IsLastHuman())
+        {
+            zombieController.Infect(target);
+            return true;
+        }
+        return false;
     }
 
     public ZombieClass GetZombieClass()

@@ -1,5 +1,4 @@
-﻿using CS2ZombiePlague.src.Data.Classes;
-using SwiftlyS2.Shared.Natives;
+﻿using SwiftlyS2.Shared.Natives;
 using SwiftlyS2.Shared.Players;
 using SwiftlyS2.Shared.SchemaDefinitions;
 

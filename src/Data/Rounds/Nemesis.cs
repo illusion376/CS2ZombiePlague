@@ -1,5 +1,4 @@
-﻿using CS2ZombiePlague.src.Data.Classes;
-using CS2ZombiePlague.src.Data.Extensions;
+﻿using CS2ZombiePlague.src.Data.Extensions;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Players;
 using SwiftlyS2.Shared.SchemaDefinitions;
@@ -15,7 +14,7 @@ public class Nemesis(ISwiftlyCore _core) : IRound
         
         CS2ZombiePlague.ZombieManager.CreateNemesis(nemesis);
         
-        InitializeNemesis(nemesis);
+        Initialize(nemesis);
         
         foreach (var player in players)
         {
@@ -35,7 +34,7 @@ public class Nemesis(ISwiftlyCore _core) : IRound
         _core.PlayerManager.SendCenter("Раунд окончен");
     }
 
-    private void InitializeNemesis(IPlayer nemesis)
+    private void Initialize(IPlayer nemesis)
     {
         var zombieNemesis = CS2ZombiePlague.ZombieManager.GetZombie(nemesis.PlayerID);
         var zombieClass = zombieNemesis.GetZombieClass();

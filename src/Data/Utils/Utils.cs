@@ -32,7 +32,7 @@ public class Utils(ISwiftlyCore _core)
 
         return null;
     }
-    
+
     public IPlayer? FindPlayerByPawnAddress(nint address)
     {
         foreach (var player in _core.PlayerManager.GetAllPlayers())

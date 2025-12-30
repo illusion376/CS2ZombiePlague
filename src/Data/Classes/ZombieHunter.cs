@@ -1,5 +1,4 @@
-﻿using CS2ZombiePlague.src.Data.Classes;
-using SwiftlyS2.Shared.Players;
+﻿using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.Data.Classes;
 
@@ -16,6 +15,6 @@ public class ZombieHunter : ZombieClass
 
     public override void Initialize(IPlayer player, ZombieController zombieController)
     {
-        zombieController.ApplyState(player);
+        zombieController.InitializeZombiePlayer(player);
     }
 }
