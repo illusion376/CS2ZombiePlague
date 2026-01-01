@@ -1,5 +1,6 @@
 ﻿using CS2ZombiePlague.Data.Managers;
 using CS2ZombiePlague.Di;
+using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.Data.Extensions;
@@ -57,9 +58,11 @@ public static class PlayerExtensions
     {
         var pawn = player.Pawn;
         if (pawn == null || !player.Controller.PawnIsAlive) return;
-
-        pawn.SetModel(modelPath);
-        pawn.CBodyComponentUpdated();
+        
+        DependencyManager.GetService<ISwiftlyCore>().Scheduler.NextTick(() =>
+        {
+            pawn.SetModel(modelPath);
+        });
     }
 
     public static bool IsInfected(this IPlayer player)

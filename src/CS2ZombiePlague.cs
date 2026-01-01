@@ -8,6 +8,7 @@ using SwiftlyS2.Shared.Events;
 using SwiftlyS2.Shared.GameEventDefinitions;
 using SwiftlyS2.Shared.GameEvents;
 using SwiftlyS2.Shared.Misc;
+using SwiftlyS2.Shared.Players;
 using SwiftlyS2.Shared.Plugins;
 
 namespace CS2ZombiePlague
@@ -46,13 +47,12 @@ namespace CS2ZombiePlague
         {
             var zombieManager = _zombieManager.Value;
             var roundManager = _roundManager.Value;
-            var humanManager = _humanManager.Value;
             var utils = _utils.Value;
             
             zombieManager.RemoveAll();
             roundManager.CancelToken();
-            humanManager.SetHumanModelAll();
-            utils.SortTeam();
+            utils.MoveAllPlayersToTeam(Team.CT);
+            utils.AllResetRenderColor();
 
             roundManager.SetRound(RoundType.None);
 

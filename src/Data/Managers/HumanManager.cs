@@ -12,19 +12,6 @@ public class HumanManager(ISwiftlyCore core)
         var humans = GetAllHumans();
         return humans.Count;
     }
-
-    public void SetHumanModelAll()
-    {
-        var humans = GetAllHumans();
-        foreach (var human in humans)
-        {
-            if (human.IsValid)
-            {
-                human.SetModel("characters/models/ctm_sas/ctm_sas.vmdl");
-                human.Pawn.Render = new Color(255, 255, 255);
-            }
-        }
-    }
     
     private List<IPlayer> GetAllHumans()
     {

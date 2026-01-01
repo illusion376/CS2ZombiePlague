@@ -51,7 +51,36 @@ public class Utils(ISwiftlyCore core)
 
         return null;
     }
+    
+    /// <summary>
+    /// Сбрасывает цвет визуализации (Render color) у всех валидных игроков
+    /// до стандартного белого значения (255, 255, 255).
+    /// </summary>
+    public void AllResetRenderColor()
+    {
+        var players = core.PlayerManager.GetAllPlayers();
+        
+        foreach (var player in players)
+        {
+            if (player != null && player.IsValid)
+            {
+                player.PlayerPawn.Render = new Color(255, 255, 255);
+            }
+        }
+    }
 
+    public void MoveAllPlayersToTeam(Team team)
+    {
+        var players = core.PlayerManager.GetAllPlayers();
+        
+        foreach (var player in players)
+        {
+            if (player != null && player.IsValid)
+            {
+                player.SwitchTeam(team);
+            }
+        }
+    }
     public void SortTeam()
     {
         int terroristCount = 0;
