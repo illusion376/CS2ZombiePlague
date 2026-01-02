@@ -20,14 +20,14 @@ public class ZombieManager(IZombiePlayerFactory zombiePlayerFactory, ISwiftlyCor
         return null;
     }
 
-    public ZombiePlayer? CreateZombie(IPlayer player, int attackerID, int VictimID)
+    public ZombiePlayer? CreateZombie(IPlayer player, int attackerid, int victimid)
     {
         if (player is { IsValid: true })
         {
             core.GameEvent.Fire<EventPlayerDeath>((@event) =>
             {
-                @event.UserId = VictimID;
-                @event.Attacker = attackerID;
+                @event.UserId = victimid;
+                @event.Attacker = attackerid;
                 @event.Weapon = "knife";
                 @event.Headshot = false;
 

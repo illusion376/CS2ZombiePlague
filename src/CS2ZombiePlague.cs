@@ -10,6 +10,7 @@ using SwiftlyS2.Shared.GameEvents;
 using SwiftlyS2.Shared.Misc;
 using SwiftlyS2.Shared.Players;
 using SwiftlyS2.Shared.Plugins;
+using SwiftlyS2.Shared.SchemaDefinitions;
 
 namespace CS2ZombiePlague
 {
@@ -55,9 +56,9 @@ namespace CS2ZombiePlague
             roundManager.CancelToken();
             utils.MoveAllPlayersToTeam(Team.CT);
             utils.AllResetRenderColor();
-
+            
             roundManager.SetRound(RoundType.None);
-
+            
             if (roundManager.RoundIsAvailable())
             {
                 roundManager.Start();

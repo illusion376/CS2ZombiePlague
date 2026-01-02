@@ -1,5 +1,6 @@
 using CS2ZombiePlague.Data.Rounds;
 using SwiftlyS2.Shared;
+using SwiftlyS2.Shared.SchemaDefinitions;
 
 namespace CS2ZombiePlague.Data.Managers;
 
