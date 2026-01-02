@@ -10,7 +10,6 @@ public class ZombieNemesis : ZombieClass
     public override string Description => "";
     public override int Health => 3000;
     public override float Speed => 290.0f;
-
     public override float Knockback => 1.2f;
     public override int Gravity => 500;
 }
