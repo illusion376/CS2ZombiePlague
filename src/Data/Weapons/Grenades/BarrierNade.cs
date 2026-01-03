@@ -15,7 +15,7 @@ public class BarrierNade(ISwiftlyCore core, RoundManager roundManager, Utils uti
     public string IternalName => "barrier_nade";
     public string DisplayName => "BarrierNade";
 
-    readonly float _explodeRadius = 125.0f;
+    readonly float _explodeRadius = 175.0f;
     readonly float _liveTime = 15.0f;
     readonly float _knockbackDistance = 200.0f;
 

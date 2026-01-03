@@ -25,6 +25,7 @@ public class Plague(ISwiftlyCore core, RoundManager roundManager, ZombieManager 
 
         var players = core.PlayerManager.GetAllPlayers().ToList();
         var countZombies = Math.Ceiling(players.Count * 0.3);
+        players.Shuffle();
 
         foreach (var player in players)
         {
