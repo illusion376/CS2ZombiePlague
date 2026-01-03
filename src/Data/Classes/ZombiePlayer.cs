@@ -26,7 +26,7 @@ public class ZombiePlayer
 
     public bool Infect(IPlayer target)
     {
-        if (target != null && !target.IsInfected() && !target.IsLastHuman() && target.PlayerPawn.ArmorValue == 0)
+        if (target != null && !target.IsInfected() && !target.IsLastHuman() && target.PlayerPawn.ArmorValue == 0 && !_player.IsNemesis())
         {
             _zombieManager.CreateZombie(target, _player.PlayerID, target.PlayerID);
             return true;
@@ -53,8 +53,6 @@ public class ZombiePlayer
             itemServices.RemoveItems();
             itemServices.GiveItem("weapon_knife");
         }
-
-        player.PlayerPawn.Render = new Color(255, 0, 0);
 
         player.SwitchTeam(Team.T);
     }

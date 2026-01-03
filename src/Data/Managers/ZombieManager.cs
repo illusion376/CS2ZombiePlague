@@ -1,4 +1,5 @@
 ﻿using CS2ZombiePlague.Data.Classes;
+using CS2ZombiePlague.Data.Extensions;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.GameEventDefinitions;
 using SwiftlyS2.Shared.Players;
@@ -31,12 +32,11 @@ public class ZombieManager(IZombiePlayerFactory zombiePlayerFactory, ISwiftlyCor
                 @event.Weapon = "knife";
                 @event.Headshot = false;
 
-                core.PlayerManager.GetPlayer(@event.Attacker).Controller.KillCount += 1;
-                core.PlayerManager.GetPlayer(@event.Attacker).Controller.KillCountUpdated();
+                core.PlayerManager.GetPlayer(@event.Attacker).Controller.Score++;
+                core.PlayerManager.GetPlayer(@event.Attacker).Controller.ScoreUpdated();
             });
-
-            return _zombiePlayers[player.PlayerID] =
-                zombiePlayerFactory.Create(player, this, new ZombieHunter());
+            
+            return _zombiePlayers[player.PlayerID] = zombiePlayerFactory.Create(player, this, new ZombieHunter());
         }
 
         return null;
