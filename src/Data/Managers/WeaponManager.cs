@@ -1,8 +1,8 @@
-﻿using CS2ZombiePlague.Data.Managers;
+﻿using CS2ZombiePlague.Data.Weapons;
 using CS2ZombiePlague.Data.Weapons.Grenades;
 using SwiftlyS2.Shared;
 
-namespace CS2ZombiePlague.Data.Weapons;
+namespace CS2ZombiePlague.Data.Managers;
 
 public class WeaponManager(ISwiftlyCore core, RoundManager roundManager, Utils utils)
 {

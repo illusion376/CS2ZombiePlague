@@ -1,12 +1,15 @@
 ﻿using System.Data;
 using CS2ZombiePlague.Config;
+using CS2ZombiePlague.Config.Zombie;
 using CS2ZombiePlague.Data;
-using CS2ZombiePlague.Data.Classes;
 using CS2ZombiePlague.Data.Managers;
 using CS2ZombiePlague.Data.Rounds;
 using Microsoft.Extensions.Configuration;
 using CS2ZombiePlague.Data.Weapons;
+using CS2ZombiePlague.Data.ZClasses;
+using CS2ZombiePlague.Data.ZClasses.Abilities;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using SwiftlyS2.Shared;
 
 namespace CS2ZombiePlague.Di;
@@ -16,23 +19,28 @@ public static class DependencyManager
     private static IServiceCollection? _services;
     private static ServiceProvider? _provider;
     
-    private const string CoreConfigName = "zp_core.json";
-    private const string CoreConfigSectionName = "ZombiePlagueCoreConfig";
-    private const string RoundConfigName = "zp_round.json";
+    private const string RoundConfigName = "round.json";
     private const string RoundConfigSectionName = "ZombiePlagueRoundConfig";
+    private const string ZClassConfigName = "zombie_class_config.json";
+    private const string ZClassConfigSectionName = "ZClassConfig";
 
     public static void Load(ISwiftlyCore core)
     {
         core.Configuration
             .InitializeJsonWithModel<ZombiePlagueRoundConfig>(RoundConfigName, RoundConfigSectionName)
             .Configure(builder => { builder.AddJsonFile(RoundConfigName, optional: false, reloadOnChange: true); });
-        
+
+        core.Configuration
+            .InitializeJsonWithModel<ZClassConfig>(ZClassConfigName, ZClassConfigSectionName)
+            .Configure(builder => { builder.AddJsonFile(ZClassConfigName, optional: false, reloadOnChange: true); });
+
         _services = new ServiceCollection();
 
         _services
             .AddSwiftly(core)
             .AddSingleton<IRoundFactory, RoundFactory>()
             .AddSingleton<IZombiePlayerFactory, ZombiePlayerFactory>()
+            .AddSingleton<IZAbilityFactory, ZAbilityFactory>()
             .AddSingleton<ZombieManager>()
             .AddSingleton<RoundManager>()
             .AddSingleton<HumanManager>()
@@ -43,6 +51,12 @@ public static class DependencyManager
         _services
             .AddOptionsWithValidateOnStart<ZombiePlagueRoundConfig>()
             .BindConfiguration(RoundConfigSectionName);
+
+        _services
+            .AddOptionsWithValidateOnStart<ZClassConfig>()
+            .BindConfiguration(ZClassConfigSectionName);
+
+        RegisterZClasses();
 
         _provider = _services.BuildServiceProvider();
     }
@@ -58,6 +72,63 @@ public static class DependencyManager
         return _provider == null
             ? throw new NoNullAllowedException(Tag + " _provider is null!")
             : _provider.GetRequiredService<T>();
+    }
+
+    private static void RegisterZClasses()
+    {
+        if (_services == null)
+        {
+            throw new NoNullAllowedException(Tag + " _services is null!");
+        }
+        
+        _services
+            .AddTransient<ZCleric>(sp =>
+            {
+                var abilityFactory = sp.GetRequiredService<IZAbilityFactory>();
+                var zClassConfig = sp.GetRequiredService<IOptions<ZClassConfig>>().Value;
+                var config = zClassConfig.Cleric;
+                return new ZCleric(config, abilityFactory);
+            });
+
+        _services
+            .AddTransient<ZHunter>(sp =>
+            {
+                var zClassConfig = sp.GetRequiredService<IOptions<ZClassConfig>>().Value;
+                var config = zClassConfig.Hunter;
+                return new ZHunter(config);
+            });
+        
+        _services
+            .AddTransient<ZAssassin>(sp =>
+            {
+                var zClassConfig = sp.GetRequiredService<IOptions<ZClassConfig>>().Value;
+                var config = zClassConfig.Assassin;
+                return new ZAssassin(config);
+            });
+        
+        _services
+            .AddTransient<ZHeavy>(sp =>
+            {
+                var zClassConfig = sp.GetRequiredService<IOptions<ZClassConfig>>().Value;
+                var config = zClassConfig.Heavy;
+                return new ZHeavy(config);
+            });
+        
+        _services
+            .AddTransient<ZShaman>(sp =>
+            {
+                var zClassConfig = sp.GetRequiredService<IOptions<ZClassConfig>>().Value;
+                var config = zClassConfig.Shaman;
+                return new ZShaman(config);
+            });
+        
+        _services
+            .AddTransient<ZNemesis>(sp =>
+            {
+                var zClassConfig = sp.GetRequiredService<IOptions<ZClassConfig>>().Value;
+                var config = zClassConfig.Nemesis;
+                return new ZNemesis(config);
+            });
     }
 
     private const string Tag = "DependencyManager";

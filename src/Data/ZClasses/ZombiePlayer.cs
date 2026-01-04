@@ -1,24 +1,26 @@
 ﻿using CS2ZombiePlague.Data.Extensions;
 using CS2ZombiePlague.Data.Managers;
+using CS2ZombiePlague.Data.ZClasses.Abilities;
+using CS2ZombiePlague.Di;
 using SwiftlyS2.Shared.Players;
 
-namespace CS2ZombiePlague.Data.Classes;
+namespace CS2ZombiePlague.Data.ZClasses;
 
 public class ZombiePlayer
 {
     private readonly ZombieManager _zombieManager;
-    private readonly ZombieClass _zombieClass;
+    private readonly IZombieClass _zombieClass;
     private readonly IPlayer _player;
     public bool IsNemesis { get; }
 
-    public ZombiePlayer(IPlayer player, ZombieManager zombieManager, ZombieClass zombieClass, bool isNemesis = false)
+    public ZombiePlayer(IPlayer player, ZombieManager zombieManager, IZombieClass zombieClass, bool isNemesis = false)
     {
         IsNemesis = isNemesis;
         _zombieManager = zombieManager;
         _zombieClass = zombieClass;
         _player = player;
 
-        Initialize(player, zombieClass);
+        Initialize();
         
         player.SendAlert("Ваш класс => " + zombieClass.DisplayName);
     }
@@ -34,25 +36,32 @@ public class ZombiePlayer
         return false;
     }
 
-    public ZombieClass GetZombieClass()
+    public IZombieClass GetZombieClass()
     {
         return _zombieClass;
     }
 
-    public void Initialize(IPlayer player, ZombieClass zombieClass)
+    public void Initialize()
     {
-        player.SetHealth(zombieClass.Health);
-        player.SetSpeed(zombieClass.Speed);
-        player.SetGravity(zombieClass.Gravity);
-        player.SetModel(zombieClass.ZombieModel);
+        _player.SetHealth(_zombieClass.Health);
+        _player.SetSpeed(_zombieClass.Speed);
+        _player.SetGravity(_zombieClass.Gravity);
+        _player.SetModel(_zombieClass.Model);
+        
+        _zombieClass.Abilities.ForEach(zClass=>zClass.SetCaster(_player));
 
-        var itemServices = player.PlayerPawn?.ItemServices;
+        var itemServices = _player.PlayerPawn?.ItemServices;
         if (itemServices != null)
         {
             itemServices.RemoveItems();
             itemServices.GiveItem("weapon_knife");
         }
 
-        player.SwitchTeam(Team.T);
+        _player.SwitchTeam(Team.T);
+    }
+
+    public void UnHookAbilities()
+    {
+        _zombieClass.Abilities.ForEach(zClass=>zClass.UnHookAbility());
     }
 }

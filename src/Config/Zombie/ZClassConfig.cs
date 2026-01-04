@@ -1,0 +1,101 @@
+﻿namespace CS2ZombiePlague.Config.Zombie;
+
+public sealed class ZClassConfig
+{
+    public ZombieCleric Cleric { get; set; } = new();
+    public ZombieHunter Hunter { get; set; } = new();
+    public ZombieAssassin Assassin { get; set; } = new();
+    public ZombieHeavy Heavy { get; set; } = new();
+    public ZombieShaman Shaman { get; set; } = new();
+    public ZombieNemesis Nemesis { get; set; } = new();
+}
+
+public class ZombieCleric : IZClassConfig
+{
+    public bool Enabled { get; set; } = true;
+    public string InternalName { get; set; } = "zombie_cleric";
+    public string DisplayName { get; set; } = "Cleric";
+    public string Model { get; set; } = "characters/models/s2ze/zombie_frozen/zombie_frozen.vmdl";
+    public string ArmsModel { get; set; } = "characters/models/s2ze/zombie_frozen/zombie_frozen.vmdl";
+    public string Description { get; set; } = "Лечит зомби";
+    public int Health { get; set; } = 2_500;
+    public float Speed { get; set; } = 250f;
+    public float Knockback { get; set; } = 0.9f;
+    public int Gravity { get; set; } = 800;
+    public List<string> Abilities { get; set; } = ["heal"];
+}
+
+public class ZombieHunter : IZClassConfig
+{
+    public bool Enabled { get; set; } = true;
+    public string InternalName { get; set; } = "zombie_hunter";
+    public string DisplayName { get; set; } = "Hunter";
+    public string Model { get; set; } = "characters/models/s2ze/zombie_frozen/zombie_frozen.vmdl";
+    public string ArmsModel { get; set; } = "characters/models/s2ze/zombie_frozen/zombie_frozen.vmdl";
+    public string Description { get; set; } = "Ставит ловушки";
+    public int Health { get; set; } = 2_500;
+    public float Speed { get; set; } = 250f;
+    public float Knockback { get; set; } = 0.9f;
+    public int Gravity { get; set; } = 800;
+    public List<string> Abilities { get; set; } = [];
+}
+
+public class ZombieAssassin : IZClassConfig
+{
+    public bool Enabled { get; set; } = true;
+    public string InternalName { get; set; } = "zombie_assassin";
+    public string DisplayName { get; set; } = "Assassin";
+    public string Model { get; set; } = "characters/models/s2ze/zombie_frozen/zombie_frozen.vmdl";
+    public string ArmsModel { get; set; } = "characters/models/s2ze/zombie_frozen/zombie_frozen.vmdl";
+    public string Description { get; set; } = "Ускоряется";
+    public int Health { get; set; } = 2_500;
+    public float Speed { get; set; } = 250f;
+    public float Knockback { get; set; } = 0.9f;
+    public int Gravity { get; set; } = 800;
+    public List<string> Abilities { get; set; } = [];
+}
+
+public class ZombieHeavy : IZClassConfig
+{
+    public bool Enabled { get; set; } = true;
+    public string InternalName { get; set; } = "zombie_heavy";
+    public string DisplayName { get; set; } = "Heavy";
+    public string Model { get; set; } = "characters/models/s2ze/zombie_frozen/zombie_frozen.vmdl";
+    public string ArmsModel { get; set; } = "characters/models/s2ze/zombie_frozen/zombie_frozen.vmdl";
+    public string Description { get; set; } = "Ослепляет";
+    public int Health { get; set; } = 2_500;
+    public float Speed { get; set; } = 250f;
+    public float Knockback { get; set; } = 0.9f;
+    public int Gravity { get; set; } = 800;
+    public List<string> Abilities { get; set; } = [];
+}
+
+public class ZombieShaman : IZClassConfig
+{
+    public bool Enabled { get; set; } = true;
+    public string InternalName { get; set; } = "zombie_shaman";
+    public string DisplayName { get; set; } = "Shaman";
+    public string Model { get; set; } = "characters/models/s2ze/zombie_frozen/zombie_frozen.vmdl";
+    public string ArmsModel { get; set; } = "characters/models/s2ze/zombie_frozen/zombie_frozen.vmdl";
+    public string Description { get; set; } = "Кричит";
+    public int Health { get; set; } = 2_500;
+    public float Speed { get; set; } = 250f;
+    public float Knockback { get; set; } = 0.9f;
+    public int Gravity { get; set; } = 800;
+    public List<string> Abilities { get; set; } = [];
+}
+
+public class ZombieNemesis : IZClassConfig
+{
+    public bool Enabled { get; set; } = true;
+    public string InternalName { get; set; } = "zombie_nemesis";
+    public string DisplayName { get; set; } = "Nemesis";
+    public string Model { get; set; } = "characters/models/s2ze/zombie_frozen/zombie_frozen.vmdl";
+    public string ArmsModel { get; set; } = "characters/models/s2ze/zombie_frozen/zombie_frozen.vmdl";
+    public string Description { get; set; } = "Убивает";
+    public int Health { get; set; } = 5_000;
+    public float Speed { get; set; } = 280f;
+    public float Knockback { get; set; } = 1f;
+    public int Gravity { get; set; } = 650;
+    public List<string> Abilities { get; set; } = [];
+}

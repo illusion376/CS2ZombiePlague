@@ -43,9 +43,9 @@ public class Plague(
 
         var players = core.PlayerManager.GetAllPlayers().ToList();
         var countZombies = Math.Ceiling(players.Count * config.ZombieSpawnRatio);
-        players.Shuffle();
+        var newPlayers = players.Shuffle();
 
-        foreach (var player in players)
+        foreach (var player in newPlayers)
         {
             if (player != null && player.IsValid)
             {
@@ -100,7 +100,7 @@ public class Plague(
                 player.Controller.Respawn();
 
                 var zombie = zombieManager.GetZombie(player.PlayerID);
-                zombie.Initialize(player, zombie.GetZombieClass());
+                zombie.Initialize();
             }
         });
 
