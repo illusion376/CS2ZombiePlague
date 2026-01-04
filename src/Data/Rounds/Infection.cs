@@ -89,7 +89,7 @@ public class Infection(
                 player.Controller.Respawn();
 
                 var zombie = zombieManager.GetZombie(player.PlayerID);
-                zombie.Initialize(player, zombie.GetZombieClass());
+                zombie.Initialize();
             }
         });
 

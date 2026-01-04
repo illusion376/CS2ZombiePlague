@@ -1,5 +1,5 @@
-﻿using CS2ZombiePlague.Data.Classes;
-using CS2ZombiePlague.Data.Extensions;
+﻿using CS2ZombiePlague.Data.ZClasses;
+using CS2ZombiePlague.Di;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.GameEventDefinitions;
 using SwiftlyS2.Shared.Players;
@@ -14,29 +14,30 @@ public class ZombieManager(IZombiePlayerFactory zombiePlayerFactory, ISwiftlyCor
     {
         if (player is { IsValid: true })
         {
+            var zClass = DependencyManager.GetService<ZCleric>();
             return _zombiePlayers[player.PlayerID] =
-                zombiePlayerFactory.Create(player, this, new ZombieHunter());
+                zombiePlayerFactory.Create(player, this, zClass);
         }
 
         return null;
     }
 
-    public ZombiePlayer? CreateZombie(IPlayer player, int attackerid, int victimid)
+    public ZombiePlayer? CreateZombie(IPlayer player, int attackerId, int victimId)
     {
         if (player is { IsValid: true })
         {
             core.GameEvent.Fire<EventPlayerDeath>((@event) =>
             {
-                @event.UserId = victimid;
-                @event.Attacker = attackerid;
+                @event.UserId = victimId;
+                @event.Attacker = attackerId;
                 @event.Weapon = "knife";
                 @event.Headshot = false;
 
                 core.PlayerManager.GetPlayer(@event.Attacker).Controller.Score++;
                 core.PlayerManager.GetPlayer(@event.Attacker).Controller.ScoreUpdated();
             });
-            
-            return _zombiePlayers[player.PlayerID] = zombiePlayerFactory.Create(player, this, new ZombieHunter());
+            var zClass = DependencyManager.GetService<ZCleric>();
+            return _zombiePlayers[player.PlayerID] = zombiePlayerFactory.Create(player, this, zClass);
         }
 
         return null;
@@ -46,8 +47,9 @@ public class ZombieManager(IZombiePlayerFactory zombiePlayerFactory, ISwiftlyCor
     {
         if (player is { IsValid: true })
         {
+            var nemesis = DependencyManager.GetService<ZNemesis>();
             return _zombiePlayers[player.PlayerID] =
-                zombiePlayerFactory.Create(player, this, new ZombieNemesis(), true);
+                zombiePlayerFactory.Create(player, this, nemesis, true);
         }
 
         return null;
@@ -55,17 +57,23 @@ public class ZombieManager(IZombiePlayerFactory zombiePlayerFactory, ISwiftlyCor
 
     public void Remove(IPlayer player)
     {
+        _zombiePlayers[player.PlayerID].UnHookAbilities();
         _zombiePlayers.Remove(player.PlayerID);
     }
 
     public void RemoveAll()
     {
+        foreach (var zPlayer in _zombiePlayers.Values)
+        {
+            zPlayer.UnHookAbilities();
+        }
+
         _zombiePlayers.Clear();
     }
 
-    public ZombiePlayer GetZombie(int playerID)
+    public ZombiePlayer GetZombie(int playerId)
     {
-        return _zombiePlayers[playerID];
+        return _zombiePlayers[playerId];
     }
 
     public Dictionary<int, ZombiePlayer> GetAllZombies()
