@@ -22,7 +22,7 @@ public class Infection(
     {
         core.Event.OnEntityTakeDamage -= TakeDamage;
 
-        if (config.ZombieRespawn)
+        if (config.ZombieRevived)
         {
             core.GameEvent.Unhook(_playerDeathEvent);
         }
@@ -36,7 +36,7 @@ public class Infection(
     {
         core.Event.OnEntityTakeDamage += TakeDamage;
 
-        if (config.ZombieRespawn)
+        if (config.ZombieRevived)
         {
             _playerDeathEvent = core.GameEvent.HookPre<EventPlayerDeath>(EventPlayerDeath);
         }
@@ -46,7 +46,7 @@ public class Infection(
 
         zombieManager.CreateZombie(firstZombie);
 
-        firstZombie.SetHealth(firstZombie.PlayerPawn!.Health * config.FirstZombieHealthRatio);
+        firstZombie.SetHealth((int)(firstZombie.PlayerPawn!.Health * config.FirstZombieHealthRatio));
 
         foreach (var player in players)
         {
@@ -82,7 +82,7 @@ public class Infection(
     private HookResult EventPlayerDeath(EventPlayerDeath @event)
     {
         var player = @event.UserIdPlayer;
-        core.Scheduler.DelayBySeconds(3, () =>
+        core.Scheduler.DelayBySeconds(config.ZombieSpawnTime, () =>
         {
             if (player != null && player.IsValid && player.IsInfected() && roundManager.GetRound() == this)
             {

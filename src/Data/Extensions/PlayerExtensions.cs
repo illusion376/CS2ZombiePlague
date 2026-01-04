@@ -8,12 +8,12 @@ namespace CS2ZombiePlague.Data.Extensions;
 
 public static class PlayerExtensions
 {
-    public static void SetHealth(this IPlayer player, float health)
+    public static void SetHealth(this IPlayer player, int health)
     {
         var playerPawn = player.PlayerPawn;
         if (playerPawn == null || playerPawn.Health <= 0) return;
 
-        playerPawn.Health = (int)health;
+        playerPawn.Health = health;
         playerPawn.HealthUpdated();
     }
 
