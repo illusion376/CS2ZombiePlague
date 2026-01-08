@@ -1,8 +1,10 @@
+using CS2ZombiePlague.Config;
 using CS2ZombiePlague.Data;
 using CS2ZombiePlague.Data.Extensions;
 using CS2ZombiePlague.Data.Managers;
 using CS2ZombiePlague.Data.Rounds;
 using CS2ZombiePlague.Di;
+using Microsoft.Extensions.Options;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Events;
 using SwiftlyS2.Shared.GameEventDefinitions;
@@ -22,8 +24,9 @@ namespace CS2ZombiePlague
         private readonly Lazy<WeaponManager> _weaponManager = new(DependencyManager.GetService<WeaponManager>);
         private readonly Lazy<KnifeManager> _knifeManager = new(DependencyManager.GetService<KnifeManager>);
         private readonly Lazy<Knockback> _knockback = new(DependencyManager.GetService<Knockback>);
+        private readonly Lazy<DamageNotify> _damageNotify = new(DependencyManager.GetService<DamageNotify>);
         private readonly Lazy<Utils> _utils = new(DependencyManager.GetService<Utils>);
-
+        
         public override void Load(bool hotReload)
         {
             if (hotReload)
@@ -36,8 +39,17 @@ namespace CS2ZombiePlague
             _roundManager.Value.RegisterRounds();
             _weaponManager.Value.RegisterWeapons();
             _knifeManager.Value.RegisterHooks();
-            _knockback.Value.Start();
-
+            
+            var config = DependencyManager.GetService<IOptions<ZombiePlagueCoreConfig>>().Value;
+            if (config.DamageNotifyEnabled)
+            {
+                _damageNotify.Value.Start();
+            }
+            if (config.KnockbackEnabled)
+            {
+                _knockback.Value.Start();
+            }
+            
             Core.GameEvent.HookPost<EventRoundStart>(OnRoundStart);
             Core.GameEvent.HookPost<EventRoundEnd>(OnRoundEnd);
         }
@@ -126,12 +138,11 @@ namespace CS2ZombiePlague
             @event.AddItem("particles/kolka/part18.vpcf");
         }
 
-
         [EventListener<EventDelegates.OnWeaponServicesCanUseHook>]
         private void OnItemServicesCanAcquireHook(IOnWeaponServicesCanUseHookEvent @event)
         {
             var player = Core.PlayerManager.GetPlayer((int)@event.WeaponServices.Pawn.Controller.EntityIndex - 1);
-            if (player.IsValid)
+            if (player != null && player.IsValid)
             {
                 if (player.IsInfected() && @event.Weapon.DesignerName != "weapon_knife")
                 {

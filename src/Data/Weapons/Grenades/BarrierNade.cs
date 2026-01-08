@@ -22,9 +22,8 @@ public class BarrierNade(ISwiftlyCore core, RoundManager roundManager, Utils uti
     private const float StartTime = 0f;
     private const float HighZBoost = 150f;
     private const float LowZBoost = 25f;
-
-    // private const string ParticleEffectName = "particles/kolka/part11.vpcf";
-    private const string ParticleEffectName = "particles/kolka/sphere_grenade.vpcf";
+    
+    private const string ParticleEffectName = "particles/kolka/part11.vpcf";
 
     public void Load()
     {

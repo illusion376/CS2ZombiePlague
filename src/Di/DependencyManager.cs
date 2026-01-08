@@ -26,6 +26,8 @@ public static class DependencyManager
     private const string ZClassConfigSectionName = "ZClassConfig";
     private const string KnifeConfigName = "knife.json";
     private const string KnifeConfigSectionName = "KnifeConfig";
+    private const string CoreConfigName = "core.json";
+    private const string CoreConfigSectionName = "CoreConfig";
 
     public static void Load(ISwiftlyCore core)
     {
@@ -40,6 +42,10 @@ public static class DependencyManager
         core.Configuration
             .InitializeJsonWithModel<KnifeConfig>(KnifeConfigName, KnifeConfigSectionName)
             .Configure(builder => { builder.AddJsonFile(KnifeConfigName, optional: false, reloadOnChange: true); });
+        
+        core.Configuration
+            .InitializeJsonWithModel<ZombiePlagueCoreConfig>(CoreConfigName, CoreConfigSectionName)
+            .Configure(builder => { builder.AddJsonFile(CoreConfigName, optional: false, reloadOnChange: true); });
 
         _services = new ServiceCollection();
 
@@ -55,6 +61,7 @@ public static class DependencyManager
             .AddSingleton<HumanManager>()
             .AddSingleton<Knockback>()
             .AddSingleton<WeaponManager>()
+            .AddSingleton<DamageNotify>()
             .AddSingleton<Utils>();
 
         _services
@@ -68,6 +75,10 @@ public static class DependencyManager
         _services
             .AddOptionsWithValidateOnStart<KnifeConfig>()
             .BindConfiguration(KnifeConfigSectionName);
+        
+        _services
+            .AddOptionsWithValidateOnStart<ZombiePlagueCoreConfig>()
+            .BindConfiguration(CoreConfigSectionName);
 
         RegisterZClasses();
         RegisterKnifes();
@@ -169,9 +180,10 @@ public static class DependencyManager
         _services
             .AddTransient<ZNemesis>(sp =>
             {
+                var abilityFactory = sp.GetRequiredService<IZAbilityFactory>();
                 var zClassConfig = sp.GetRequiredService<IOptions<ZClassConfig>>().Value;
                 var config = zClassConfig.Nemesis;
-                return new ZNemesis(config);
+                return new ZNemesis(config, abilityFactory);
             });
     }
 

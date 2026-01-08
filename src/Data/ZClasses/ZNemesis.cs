@@ -3,7 +3,7 @@ using CS2ZombiePlague.Data.ZClasses.Abilities;
 
 namespace CS2ZombiePlague.Data.ZClasses;
 
-public class ZNemesis(ZombieNemesis config) : IZombieClass
+public class ZNemesis(ZombieNemesis config, IZAbilityFactory abilityFactory) : IZombieClass
 {
     public string InternalName { get; set; } = config.InternalName;
 
@@ -23,5 +23,5 @@ public class ZNemesis(ZombieNemesis config) : IZombieClass
 
     public int Gravity { get; set; } = config.Gravity;
 
-    public List<IZAbility> Abilities { get; set; } = [];
+    public List<IZAbility> Abilities { get; set; } = [abilityFactory.Create<Leap>()];
 }

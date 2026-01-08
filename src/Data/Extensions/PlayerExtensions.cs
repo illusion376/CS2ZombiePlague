@@ -59,11 +59,11 @@ public static class PlayerExtensions
 
     public static void SetModel(this IPlayer player, string modelPath)
     {
-        var pawn = player.PlayerPawn;
-        if (pawn == null || !player.Controller.PawnIsAlive) return;
+        if (player.PlayerPawn == null || !player.Controller.PawnIsAlive) return;
         
         DependencyManager.GetService<ISwiftlyCore>().Scheduler.NextWorldUpdate(() =>
         {
+            var pawn = player.PlayerPawn;
             pawn.SetModel(modelPath);
             pawn.GroundEntity.Value = null;
             pawn.GroundEntityUpdated();

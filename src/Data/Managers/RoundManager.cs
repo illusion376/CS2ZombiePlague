@@ -45,6 +45,11 @@ public class RoundManager(ISwiftlyCore core, IOptions<ZombiePlagueRoundConfig> r
     public bool RoundIsAvailable()
     {
         var players = core.PlayerManager.GetAllPlayers();
+
+        if (core.EntitySystem.GetGameRules()?.WarmupPeriod == true)
+        {
+            return false;
+        }
         return players.Count() > 1;
     }
 
