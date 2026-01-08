@@ -29,10 +29,25 @@ public class KnifeManager(
         core.Event.OnClientPutInServer += ClientPutInServerEvent;
         core.GameEvent.HookPost<EventItemEquip>(PlayerEquipEvent);
         core.GameEvent.HookPost<EventPlayerChat>(PlayerChatEvent);
+        core.GameEvent.HookPost<EventPlayerSpawn>(PlayerSpawnEvent);
         _menuApi = CreateMenu();
     }
 
     public IKnife GetPlayerKnife(int playerId) => _playerKnifes[playerId];
+
+    private void SetDefaultKnife(int playerId) => _playerKnifes[playerId] = factory.Create<GravityKnifeWeapon>();
+
+    private HookResult PlayerSpawnEvent(EventPlayerSpawn @event)
+    {
+        if (@event.UserIdPlayer == null)
+        {
+            return HookResult.Continue;
+        }
+
+        GiveKnifeAsync(@event.UserIdPlayer);
+
+        return HookResult.Continue;
+    }
 
     private HookResult PlayerEquipEvent(EventItemEquip @event)
     {
@@ -50,25 +65,27 @@ public class KnifeManager(
             return HookResult.Continue;
         }
 
-        if (!_playerKnifes.ContainsKey(player.PlayerID))
-            _playerKnifes[player.PlayerID] = factory.Create<SpeedKnifeWeapon>();
+        var playerId = player.PlayerID;
 
-        var weapons = pawn.WeaponServices?.MyWeapons;
-        if (weapons == null)
-            return HookResult.Continue;
+        if (!_playerKnifes.ContainsKey(playerId))
+            SetDefaultKnife(playerId);
 
+        var weapons = pawn.WeaponServices?.MyValidWeapons;
+        var eventKnifeName = @event.Item;
         foreach (var weapon in weapons)
         {
-            if (weapon == null || !weapon.IsValid || !weapon.Value.DesignerName.Contains(@event.Item))
+            if (!weapon.DesignerName.Contains(eventKnifeName))
                 continue;
 
-            var knife = GetPlayerKnife(player.PlayerID);
-            weapon.Value.SetModel(knife.Model);
-
-            if (pawn.WeaponServices.ActiveWeapon.Value.Address == weapon.Value.Address)
-                SetKnifeProperties(knife, player);
-
+            var knife = GetPlayerKnife(playerId);
+            weapon.SetModel(knife.Model);
             break;
+        }
+
+        if (pawn.WeaponServices.ActiveWeapon.Value.DesignerName.Contains(eventKnifeName))
+        {
+            var knife = GetPlayerKnife(playerId);
+            SetKnifeProperties(knife, player);
         }
 
         return HookResult.Continue;
@@ -76,7 +93,7 @@ public class KnifeManager(
 
     private void ClientPutInServerEvent(IOnClientPutInServerEvent @event)
     {
-        _playerKnifes[@event.PlayerId] = factory.Create<GravityKnifeWeapon>();
+        SetDefaultKnife(@event.PlayerId);
     }
 
     private void SetKnifeProperties(IKnife knife, IPlayer player)
@@ -102,9 +119,13 @@ public class KnifeManager(
             var button = new ButtonMenuOption($"{cfg.DisplayName} {cfg.Description}");
             button.Click += async (_, args) =>
             {
+                if (@args.Player == null || @args.Player.IsInfected())
+                {
+                    return;
+                }
+
                 _playerKnifes[args.Player.PlayerID] = factory.Create<T>();
-                args.Player.SendChatAsync("Нож успешно выбран!");
-                GiveKnife(args.Player);
+                GiveKnifeAsync(args.Player);
             };
             builder.AddOption(button);
         }
@@ -116,9 +137,9 @@ public class KnifeManager(
         return builder.Build();
     }
 
-    private void GiveKnife(IPlayer player)
+    private void GiveKnifeAsync(IPlayer player)
     {
-        core.Scheduler.NextTickAsync(() =>
+        core.Scheduler.NextWorldUpdateAsync(() =>
         {
             var pawn = player.PlayerPawn;
             if (pawn == null || !player.Controller.PawnIsAlive)
@@ -127,15 +148,16 @@ public class KnifeManager(
             }
 
             pawn.WeaponServices.RemoveWeaponByDesignerName("weapon_knife");
-            pawn.ItemServices.GiveItem("weapon_knife");
-
-            foreach (var weapon in pawn.WeaponServices.MyWeapons)
+            pawn.ItemServices.GiveItem("weapon_knife_t");
+            foreach (var weapon in pawn.WeaponServices.MyValidWeapons)
             {
-                if (!weapon.Value.DesignerName.Contains("knife"))
+                if (!weapon.DesignerName.Contains("knife"))
                     continue;
 
-                weapon.Value.SetModel(GetPlayerKnife(player.PlayerID).Model);
-                pawn.WeaponServices.SelectWeapon(weapon.Value);
+                weapon.SetModel(GetPlayerKnife(player.PlayerID).Model);
+                pawn.WeaponServices.SelectWeapon(weapon);
+
+                player.SendChat("Нож успешно выбран!");
                 break;
             }
         });

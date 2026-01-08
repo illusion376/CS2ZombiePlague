@@ -26,17 +26,14 @@ public class ZombieManager(IZombiePlayerFactory zombiePlayerFactory, ISwiftlyCor
     {
         if (player is { IsValid: true })
         {
-            core.GameEvent.Fire<EventPlayerDeath>((@event) =>
+            core.GameEvent.FireAsync<EventPlayerDeath>((@event) =>
             {
                 @event.UserId = victimId;
                 @event.Attacker = attackerId;
                 @event.Weapon = "knife";
-                @event.Headshot = false;
                 @event.Assister = -1;
-
-                core.PlayerManager.GetPlayer(@event.Attacker).Controller.Score++;
-                core.PlayerManager.GetPlayer(@event.Attacker).Controller.ScoreUpdated();
             });
+
             var zClass = DependencyManager.GetService<ZCleric>();
             return _zombiePlayers[player.PlayerID] = zombiePlayerFactory.Create(player, this, zClass);
         }

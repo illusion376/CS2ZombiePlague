@@ -1,6 +1,7 @@
 ﻿namespace CS2ZombiePlague.Config;
 
-public class ZombiePlagueCoreConfig
+public sealed class ZombiePlagueCoreConfig
 {
-    
+    public bool DamageNotifyEnabled { get; set; } = true;
+    public int DamageNotifyDuration { get; set; } = 1000;
 }
