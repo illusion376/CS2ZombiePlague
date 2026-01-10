@@ -26,7 +26,7 @@ namespace CS2ZombiePlague
         private readonly Lazy<Knockback> _knockback = new(DependencyManager.GetService<Knockback>);
         private readonly Lazy<DamageNotify> _damageNotify = new(DependencyManager.GetService<DamageNotify>);
         private readonly Lazy<Utils> _utils = new(DependencyManager.GetService<Utils>);
-        
+
         public override void Load(bool hotReload)
         {
             if (hotReload)
@@ -39,24 +39,20 @@ namespace CS2ZombiePlague
             _roundManager.Value.RegisterRounds();
             _weaponManager.Value.RegisterWeapons();
             _knifeManager.Value.RegisterHooks();
-            
+
             var config = DependencyManager.GetService<IOptions<ZombiePlagueCoreConfig>>().Value;
             if (config.DamageNotifyEnabled)
             {
                 _damageNotify.Value.Start();
             }
+
             if (config.KnockbackEnabled)
             {
                 _knockback.Value.Start();
             }
 
-            if (config.MoneySystemEnabled)
-            {
-                _moneySystem.Value.Start();
-            }
-            
             new AdminMenu(Core, _roundManager.Value, _zombieManager.Value).Load();
-            
+
             Core.GameEvent.HookPost<EventRoundStart>(OnRoundStart);
             Core.GameEvent.HookPost<EventRoundEnd>(OnRoundEnd);
         }
@@ -103,6 +99,9 @@ namespace CS2ZombiePlague
 
             return HookResult.Continue;
         }
+
+        private static uint PackRgba(byte r, byte g, byte b, byte a)
+            => (uint)(r | (g << 8) | (b << 16) | (a << 24));
 
         private HookResult OnRoundEnd(EventRoundEnd @event)
         {
