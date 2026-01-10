@@ -1,4 +1,5 @@
 ﻿using CS2ZombiePlague.Config.Ability;
+using CS2ZombiePlague.Data.Abilities.Contracts;
 using CS2ZombiePlague.Data.Extensions;
 using CS2ZombiePlague.Di;
 using SwiftlyS2.Shared;

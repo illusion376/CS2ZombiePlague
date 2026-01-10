@@ -33,6 +33,10 @@
     <Content Remove="src\Data\Utilities\**" />
     <EmbeddedResource Remove="src\Data\Utilities\**" />
     <None Remove="src\Data\Utilities\**" />
+    <Compile Remove="src\Data\Abilities\IActiveAbility.cs" />
+    <Compile Remove="src\Data\Abilities\BaseActiveAbility.cs" />
+    <Compile Remove="src\Data\Abilities\BasePassiveAbility.cs" />
+    <Compile Remove="src\Data\Abilities\IParticleRestricted.cs" />
   </ItemGroup>
 
   <Target Name="CreateZip" AfterTargets="Publish">

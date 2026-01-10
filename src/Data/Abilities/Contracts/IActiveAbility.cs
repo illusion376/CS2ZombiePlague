@@ -1,6 +1,6 @@
 ﻿using SwiftlyS2.Shared.Events;
 
-namespace CS2ZombiePlague.Data.Abilities;
+namespace CS2ZombiePlague.Data.Abilities.Contracts;
 
 public interface IActiveAbility : IAbility
 {

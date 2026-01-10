@@ -1,4 +1,4 @@
-﻿namespace CS2ZombiePlague.Data.Abilities;
+﻿namespace CS2ZombiePlague.Data.Abilities.Contracts;
 
 public interface ISoundPlayable
 {
