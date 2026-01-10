@@ -1,90 +1,82 @@
-﻿namespace CS2ZombiePlague.Data.Abilities;
+﻿using CS2ZombiePlague.Config.Ability;
+using CS2ZombiePlague.Data.Abilities.Contracts;
+using CS2ZombiePlague.Data.Extensions;
+using CS2ZombiePlague.Data.Managers;
+using CS2ZombiePlague.Di;
+using CS2ZombiePlague.Utils;
+using SwiftlyS2.Shared;
+using SwiftlyS2.Shared.Events;
 
-/*public class Charge : IZAbility
+namespace CS2ZombiePlague.Data.Abilities;
+
+public sealed class Charge(ISwiftlyCore core, ChargeConfig config) : BaseActiveAbility(core)
 {
-    private readonly ISwiftlyCore _core;
-    private IPlayer? _caster;
-    private readonly ZombieManager _zombieManager;
+    public override KeyKind? Key => KeyKind.E;
+    
+    public override float Cooldown => config.CooldownTime;
+    
+    private CancellationTokenSource _chargeToken = null!;
+    private readonly ZombieManager _zombieManager = DependencyManager.GetService<ZombieManager>();
 
-    private bool IsActive = false;
+    private const uint DurationEffectAbility = 500;
 
-    private const float MaxSpeed = 650f;
-    private const float ChargeTime = 3.0f;
-    private const float Delay = 0.1f;
-    private const float Cooldown = 5.0f;
-
-    public void SetCaster(IPlayer caster)
+    public override void Use()
     {
-        _caster = caster;
-    }
-
-    public void UnHookAbility()
-    {
-        _core.Event.OnClientKeyStateChanged -= OnClientKeyStateChanged;
-    }
-
-    public void Use()
-    {
-        IsActive = true;
-
-        var startSpeed = _zombieManager.GetZombie(_caster.PlayerID).GetZombieClass().Speed;
-        var deltaSpeed = (MaxSpeed - startSpeed) / ChargeTime * Delay;
-
+        var startSpeed = _zombieManager.GetZombie(Caster.PlayerID).GetZombieClass().Speed;
+        var maxSpeed = config.MaxSpeed;
+        var chargeTime = config.ChargeTime;
+        var speedUpdatePerTimeTick = config.SpeedUpdatePerTimeTick;
+        var deltaSpeed = (maxSpeed - startSpeed) / chargeTime * speedUpdatePerTimeTick;
+        
+        var currentTime = 0f;
         var currentSpeed = startSpeed;
-
-        var startTime = 0f;
-
-        CancellationTokenSource token = null!;
-        token = _core.Scheduler.RepeatBySeconds(Delay, () =>
+        
+        core.NetMessage.SendCUserMessageFade(
+            playerId: Caster.PlayerID,
+            duration: DurationEffectAbility,
+            holdTime: (chargeTime * 1000) - (DurationEffectAbility * 2) - 1000,
+            flags: NetMessageExt.FFadeIn | NetMessageExt.FFadeOut,
+            color: NetMessageExt.Rgba(153, 40, 40, 80)
+        );
+        
+        _chargeToken = core.Scheduler.RepeatBySeconds(speedUpdatePerTimeTick, () =>
         {
-            if (_caster == null && !_caster.Controller.PawnIsAlive || !_caster.IsInfected())
+            if (!Caster.IsValid || !Caster.IsAlive || !Caster.IsInfected())
             {
-                IsActive = false;
-                token.Cancel();
+                _chargeToken.Cancel();
             }
 
-            if (startTime >= ChargeTime)
+            if (currentTime >= chargeTime)
             {
-                _core.Scheduler.NextTick(() => { _caster.SetSpeed(startSpeed); });
-                IsActive = false;
-                token.Cancel();
+                core.Scheduler.NextTick(() => { Caster.SetSpeed(startSpeed); });
+                _chargeToken.Cancel();
             }
 
             currentSpeed += deltaSpeed;
-            _caster.SetSpeed(currentSpeed);
-
-            startTime += Delay;
+            currentTime += speedUpdatePerTimeTick;
+            Caster.SetSpeed(currentSpeed);
         });
+        
+        base.Use();
     }
-
-    public Charge(ISwiftlyCore core, ZombieManager zombieManager)
+    
+    protected override bool CanUse()
     {
-        _core = core;
-        _zombieManager = zombieManager;
+        if (!Caster.IsValid)
+        {
+            return false;
+        }
 
-        core.Event.OnClientKeyStateChanged += OnClientKeyStateChanged;
+        if (!Caster.IsAlive)
+        {
+            return false;
+        }
+
+        if (!Caster.IsInfected())
+        {
+            return false;
+        }
+
+        return true;
     }
-
-    private void OnClientKeyStateChanged(IOnClientKeyStateChangedEvent @event)
-    {
-        if (IsActive)
-        {
-            return;
-        }
-
-        var player = _core.PlayerManager.GetPlayer(@event.PlayerId);
-
-        if (player is not { IsValid: true } || !player.Controller.PawnIsAlive || !player.Equals(_caster))
-        {
-            return;
-        }
-
-        var isPressed = @event.Pressed;
-        var key = @event.Key;
-
-        if (key == KeyKind.F && isPressed)
-        {
-            Use();
-        }
-    }
-}*/
+}

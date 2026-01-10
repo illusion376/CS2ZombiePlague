@@ -1,4 +1,5 @@
 ﻿using CS2ZombiePlague.Config.Ability;
+using CS2ZombiePlague.Data.Abilities.Contracts;
 using CS2ZombiePlague.Data.Extensions;
 using CS2ZombiePlague.Data.Managers;
 using CS2ZombiePlague.Di;
@@ -94,7 +95,7 @@ public sealed class Heal(ISwiftlyCore core, HealConfig config) : BaseActiveAbili
             ref trace,
             casterPawn
         );
-
+        
         var entity = trace.Entity;
         if (entity is null)
             return false;

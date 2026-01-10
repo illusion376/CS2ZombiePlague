@@ -5,6 +5,7 @@ using CS2ZombiePlague.Config.Weapon;
 using CS2ZombiePlague.Config.Zombie;
 using CS2ZombiePlague.Data;
 using CS2ZombiePlague.Data.Abilities;
+using CS2ZombiePlague.Data.Abilities.Contracts;
 using CS2ZombiePlague.Data.Managers;
 using CS2ZombiePlague.Data.Rounds;
 using CS2ZombiePlague.Data.Weapons.Knifes;

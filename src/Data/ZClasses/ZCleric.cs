@@ -1,5 +1,6 @@
 ﻿using CS2ZombiePlague.Config.Zombie;
 using CS2ZombiePlague.Data.Abilities;
+using CS2ZombiePlague.Data.Abilities.Contracts;
 
 namespace CS2ZombiePlague.Data.ZClasses;
 
@@ -23,5 +24,5 @@ public sealed class ZCleric(ZombieCleric config, IAbilityFactory abilityFactory)
 
     public int Gravity { get; set; } = config.Gravity;
 
-    public List<IAbility> Abilities { get; set; } = [abilityFactory.Create<Heal>()];
+    public List<IAbility> Abilities { get; set; } = [abilityFactory.Create<Heal>(), abilityFactory.Create<Blind>(), abilityFactory.Create<Charge>()];
 }

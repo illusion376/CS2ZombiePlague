@@ -1,20 +1,17 @@
-﻿using CS2ZombiePlague.Utils;
+﻿using CS2ZombiePlague.Data.ZClasses;
 using SwiftlyS2.Shared;
-using SwiftlyS2.Shared.Events;
 using SwiftlyS2.Shared.Players;
 using SwiftlyS2.Shared.SchemaDefinitions;
 
-namespace CS2ZombiePlague.Data.Abilities;
+namespace CS2ZombiePlague.Data.Abilities.Contracts;
 
-public abstract class BaseActiveAbility(ISwiftlyCore core) : IActiveAbility, ICooldownRestricted, IParticleRestricted, ISoundPlayable
+public abstract class BasePassiveAbility(ISwiftlyCore core) : IPassiveAbility, ICooldownRestricted, IParticleRestricted, ISoundPlayable
 {
     protected IPlayer Caster { get; private set; } = null!;
     
     protected IPlayer? Target { get; set; }
-
-    public bool IsActive { get; set; }
     
-    public abstract KeyKind? Key { get; }
+    public bool IsActive { get; set; }
     
     public abstract float Cooldown { get; }
     private CancellationTokenSource? _cooldownToken;
@@ -25,19 +22,20 @@ public abstract class BaseActiveAbility(ISwiftlyCore core) : IActiveAbility, ICo
     private bool _isHooked;
     
     private const float TickInterval = 1.0f;
-    
+
     public virtual void Use()
     {
         if (Cooldown > 0)
         {
             StartCooldown();
         }
-        
-        CreateParticle();
-        
-        PlaySound();
+
+        if (Particle != null)
+        {
+            CreateParticle();
+        }
     }
-    
+
     public void SetCaster(IPlayer caster)
     {
         Caster = caster;
@@ -50,50 +48,18 @@ public abstract class BaseActiveAbility(ISwiftlyCore core) : IActiveAbility, ICo
         {
             return;
         }
-
-        core.Event.OnClientKeyStateChanged += OnClientKeyStateChanged;
+        
         _isHooked = true;
     }
-    
+
     public void UnHook()
     {
         if (!_isHooked)
         {
             return;
         }
-
-        core.Event.OnClientKeyStateChanged -= OnClientKeyStateChanged;
+        
         _isHooked = false;
-    }
-    
-    public void OnClientKeyStateChanged(IOnClientKeyStateChangedEvent @event)
-    {
-        if (@event.PlayerId == Caster.PlayerID && @event.Pressed && @event.Key == Key && !IsActive)
-        {
-            OnClientButtonClickHandler(@event.PlayerId, @event.Key, @event.Pressed);
-        }
-    }
-
-    protected virtual void OnClientButtonClickHandler(int playerId, KeyKind key, bool pressed)
-    {
-        TryUse();
-    }
-    
-    protected virtual bool CanUse() => true;
-    
-    private void TryUse()
-    {
-        if (IsActive)
-        {
-            return;
-        }
-
-        if (!CanUse())
-        {
-            return;
-        }
-
-        Use();
     }
     
     public void StartCooldown()
@@ -142,7 +108,7 @@ public abstract class BaseActiveAbility(ISwiftlyCore core) : IActiveAbility, ICo
     }
 
     public virtual void CreateParticle() { }
-
+    
     public virtual void PlaySound() { }
     
     private void StopCooldownTimerInternal()

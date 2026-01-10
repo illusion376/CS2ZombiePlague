@@ -5,6 +5,10 @@ public sealed class AbilityConfig
     public HealConfig Heal { get; set; } = new();
     
     public LeapConfig Leap { get; set; } = new();
+
+    public BlindConfig Blind { get; set; } = new();
+
+    public ChargeConfig Charge { get; set; } = new();
 }
 
 public sealed class HealConfig : IAbilityConfig
@@ -66,3 +70,63 @@ public sealed class LeapConfig : IAbilityConfig
     // Высота прыжка
     public float LeapBoost { get; set; } = 400f;
 } 
+
+public sealed class BlindConfig : IAbilityConfig
+{
+    // Доступна ли способность
+    public bool Enable { get; set; } = true;
+    
+    // Время в течение которого способность будет недоступна для повторного применения 
+    public float CooldownTime { get; set; } = 50f;
+    
+    // Путь к визуальному эффекту способности
+    public List<string> ParticleEffectNames { get; set; } = [""];
+
+    // Длительность визуального эффекта
+    public float DurationParticleEffect { get; set; } = 2.0f;
+
+    // Путь к звуковому эффекту способности
+    public List<string> SoundEffectNames { get; set; } = [""];
+
+    // Время когда эффект будет появляться и потухать (200 мс тратится на появление эффекта и 200 мс на растворение) 
+    public uint DurationEffectAfterAbilityOnAttacker { get; set; } = 300;
+
+    // Время сколько эффект задержится на экране (Duration + holdTime + Duration = общее время эффекта на экране)
+    public uint HoldTimeEffectAfterAbilityOnAttacker { get; set; } = 2_000;
+
+    // Кол-во красного в цвете эффекта от 0..255
+    public byte RedColorEffectAfterAbilityOnAttacker { get; set; } = 0;
+    
+    // Кол-во зеленного в цвете эффекта от 0..255
+    public byte GreenColorEffectAfterAbilityOnAttacker { get; set; } = 0;
+    
+    // Кол-во синего в цвете эффекта от 0..255
+    public byte BlueColorEffectAfterAbilityOnAttacker { get; set; } = 0;
+    
+    // Прозрачность эффекта от 0..255
+    public byte AlphaEffectAfterAbilityOnAttacker { get; set; } = 255;
+}
+
+public sealed class ChargeConfig : IAbilityConfig
+{
+    // Доступна ли способность
+    public bool Enable { get; set; } = true;
+    
+    // Время в течение которого способность будет недоступна для повторного применения 
+    public float CooldownTime { get; set; } = 30f;
+
+    // Путь к визуальному эффекту способности
+    public List<string> ParticleEffectNames { get; set; } = [""];
+
+    // Путь к звуковому эффекту способности
+    public List<string> SoundEffectNames { get; set; } = [""];
+    
+    // Максимальная скорость при использовании способности
+    public float MaxSpeed { get; set; } = 600f;
+
+    // Общее время действия способности 
+    public uint ChargeTime { get; set; } = 5;
+
+    // Время обновления скорости (от 0.01 до 0.1, чем меньше, тем плавнее) 
+    public float SpeedUpdatePerTimeTick { get; set; } = 0.05f;
+}
