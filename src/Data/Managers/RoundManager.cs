@@ -2,6 +2,7 @@ using CS2ZombiePlague.Config;
 using CS2ZombiePlague.Data.Rounds;
 using Microsoft.Extensions.Options;
 using SwiftlyS2.Shared;
+using SwiftlyS2.Shared.Sounds;
 
 namespace CS2ZombiePlague.Data.Managers;
 
@@ -17,54 +18,31 @@ public class RoundManager(ISwiftlyCore core, IOptions<RoundConfig> roundConfig, 
     public void RegisterRounds()
     {
         _rounds.Clear();
-
-        var config = roundConfig.Value;
-        var roundsToRegister = new IRoundConfig?[] { null, config.Infection, config.Plague, config.Nemesis }
-            .Where(round => round == null || round.Enable);
-
-        foreach (var round in roundsToRegister)
+        _rounds.Add(roundFactory.Create(null, this));
+        foreach (var round in roundConfig.Value.Rounds)
         {
-            var instance = round == null ? roundFactory.Create(null, this) : roundFactory.Create(round, this);
-            if (!_rounds.Contains(instance))
+            var instance = roundFactory.Create(round, this);
+            if (round.Enable && !_rounds.Contains(instance))
             {
                 _rounds.Add(instance);
             }
         }
     }
 
-    public void SetRound(IRound round)
-    {
-        _currentRound = round;
-    }
-
-    public IRound? GetRound()
-    {
-        return _currentRound;
-    }
-
-    public bool RoundIsAvailable()
-    {
-        var players = core.PlayerManager.GetAllPlayers();
-
-        if (core.EntitySystem.GetGameRules()?.WarmupPeriod == true)
-        {
-            return false;
-        }
-        return players.Count() > 1;
-    }
-
-    public bool IsNoneRound()
-    {
-        return _currentRound is None;
-    }
-
     public void Start()
     {
-        int localTime = 0;
+        var localTime = 0;
+        bool soundIsActive = false;
+
         _token = core.Scheduler.RepeatBySeconds(1, () =>
         {
             localTime += 1;
             core.PlayerManager.SendCenter("До заражения " + (RoundStartTime - localTime) + " секунд");
+
+            if (RoundStartTime - localTime <= 11 && !soundIsActive)
+            {
+                soundIsActive = StartCountdownSound();
+            }
 
             if (localTime >= RoundStartTime)
             {
@@ -79,6 +57,23 @@ public class RoundManager(ISwiftlyCore core, IOptions<RoundConfig> roundConfig, 
         });
     }
 
+    public bool RoundIsAvailable()
+    {
+        var players = core.PlayerManager.GetAllPlayers();
+
+        if (core.EntitySystem.GetGameRules()?.WarmupPeriod == true)
+        {
+            return false;
+        }
+
+        return players.Count() > 1;
+    }
+
+    public bool IsNoneRound()
+    {
+        return _currentRound is None;
+    }
+
     public void CancelToken()
     {
         if (_token != null)
@@ -87,9 +82,51 @@ public class RoundManager(ISwiftlyCore core, IOptions<RoundConfig> roundConfig, 
         }
     }
 
+    public void SetRound(IRound round)
+    {
+        _currentRound = round;
+    }
+
+    public IRound? GetRound()
+    {
+        return _currentRound;
+    }
+
+    private bool StartCountdownSound()
+    {
+        using var soundEvent = new SoundEvent()
+        {
+            Volume = 3,
+            Name = "ZombiePlagueSounds.countdown",
+            SourceEntityIndex = -1
+        };
+        soundEvent.Recipients.AddAllPlayers();
+        soundEvent.Emit();
+
+        return true;
+    }
+
     private IRound RandomRound()
     {
+        var totalWeight = 0;
+        foreach (var config in roundConfig.Value.Rounds)
+        {
+            totalWeight += config.Chance;
+        }
+
         var randomizer = new Random();
-        return _rounds[randomizer.Next(1, _rounds.Count)];
+        var randomWeight = randomizer.Next(0, totalWeight + 1);
+
+        var currentWeight = 0;
+        foreach (var config in roundConfig.Value.Rounds)
+        {
+            currentWeight += config.Chance;
+            if (randomWeight <= currentWeight)
+            {
+                return roundFactory.Create(config, this);
+            }
+        }
+
+        return roundFactory.Create(roundConfig.Value.Rounds.Find(r => r is InfectionConfig), this);
     }
 }
