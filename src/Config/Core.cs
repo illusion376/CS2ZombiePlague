@@ -11,7 +11,7 @@ public sealed class ZombiePlagueCoreConfig
     public int MaxMoney { get; set; } = 100000;
     public int StartMoney { get; set; } = 5000;
 
-    public int PreStartDelay { get; set; } = 15;
+    public int PreStartDelay { get; set; } = 20;
     public int ZombieSpawnDelay { get; set; } = 5;
     
     // Включить подсветку экрана после убийства
